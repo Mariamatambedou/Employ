@@ -1,5 +1,11 @@
 pipeline {
     agent any
+
+    environment{
+        
+        registry = "tambedou/app"
+        registryCredential = '<dockerhub-credential-name>'        
+    }
     
     stages {
          stage('Clean') {
@@ -41,7 +47,7 @@ pipeline {
             steps {
                 script {
                     // Construire l'image Docker
-            dockerImage = docker.build("tambedou/app:latest")               
+          dockerImage = docker.build registry + ":$BUILD_NUMBER"
                 }
             }
           }
