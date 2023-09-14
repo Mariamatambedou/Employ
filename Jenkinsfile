@@ -1,10 +1,4 @@
 pipeline {
-
-    environment {
-        DOCKER_HUB_CREDENTIALS = credentials('tambadou-dockerhub')
-        repo = 'https://hub.docker.com/repositories/tambedou/'
-        DOCKERFILE_PATH = 'Dockerfile'
-    }
     agent any
     
     stages {
@@ -53,10 +47,12 @@ pipeline {
           }
 
       stage('Push image') {
+                     steps {
+
         withDockerRegistry([ credentialsId: "tambadou-dockerhub", url: "https://hub.docker.com/repositories/tambedou/" ]) {
-        dockerImage.push()
+            dockerImage.push()
         }
     }    
 }
 }
-
+}
