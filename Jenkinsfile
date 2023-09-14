@@ -1,8 +1,12 @@
 pipeline {
+
+    environment {
+        DOCKER_HUB_CREDENTIALS = credentials('tambadou-dockerhub')
+        DOCKER_IMAGE_NAME = 'tambedou/app'
+        DOCKERFILE_PATH = 'Dockerfile'
+    }
     agent any
-
- 
-
+    
     stages {
          stage('Clean') {
             steps {
@@ -38,22 +42,17 @@ pipeline {
             bat 'mvn test -f Employ/pom.xml'
             }
         }
-    }
+    
 
-        environment {
-        DOCKER_HUB_CREDENTIALS = credentials('tambadou-dockerhub')
-        DOCKER_IMAGE_NAME = 'tambedou/app'
-        DOCKERFILE_PATH = 'Dockerfile'
-    }
-        stages {
-
+    
         stage('Build Docker Image') {
             steps {
                 script {
                     // Construire l'image Docker
-                    dockerImage = docker.build("${DOCKER_IMAGE_NAME}", "--file ${DOCKERFILE_PATH} .")
+                    dockerImage = docker.build("${DOCKER_IMAGE_NAME}, "--file ${DOCKERFILE_PATH} .")
                 }
             }
         }
     }
+}
 }
