@@ -35,7 +35,25 @@ pipeline {
             bat 'mvn test -f Employ/pom.xml'
             }
         }
+        environment {
+        // Vous pouvez définir ici les variables d'environnement nécessaires
+        DOCKER_HUB_CREDENTIALS = credentials('tambadou-dockerhub')
+        DOCKER_IMAGE_NAME = 'tambedou/app'
+        DOCKERFILE_PATH = 'Dockerfile'
+    }
 
+    stages {
+        stage('Checkout') {
+            steps {
+                checkout scm
+            }
+        }
+
+        stage('Build Docker Image') {
+            steps {
+                script {
+                    // Construire l'image Docker
+                    dockerImage = docker.build("${DOCKER_IMAGE_NAME}:${env.BUILD_NUMBER}", "-
 
     }
 }
