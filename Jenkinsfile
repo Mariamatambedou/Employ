@@ -53,7 +53,7 @@ pipeline {
             steps {
                 script {
                     // Construire l'image Docker
-                    dockerImage = docker.build("${DOCKER_IMAGE_NAME}"
+                    dockerImage = docker.build("${DOCKER_IMAGE_NAME}")
 
     }
 }
