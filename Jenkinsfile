@@ -49,7 +49,7 @@ pipeline {
             steps {
                 script {
                     // Construire l'image Docker
-                    dockerImage = docker.build("${DOCKER_IMAGE_NAME}, "--file ${DOCKERFILE_PATH} .")
+                    docker.build DOCKER_IMAGE_NAME + ":$BUILD_NUMBER"
                 }
             }
         }
