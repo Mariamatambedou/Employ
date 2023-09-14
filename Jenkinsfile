@@ -41,7 +41,7 @@ pipeline {
             steps {
                 script {
                     // Construire l'image Docker
-            dockerImage = docker.build("tambedou/newapp:latest")               
+            dockerImage = docker.build("tambedou/app:latest")               
                 }
             }
           }
