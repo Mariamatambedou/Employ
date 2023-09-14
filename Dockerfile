@@ -1,5 +1,5 @@
 # Utilisez l'image de base Eclipse Temurin avec JDK 17
-FROM eclipse-temurin:17-jdk-jammy AS builder
+FROM eclipse-temurin:17-jdk-jammy
 
 # Définissez le répertoire de travail
 WORKDIR /app
@@ -19,7 +19,7 @@ COPY src ./src
 RUN ./mvnw clean install
 
 # Créez une image Docker légère basée sur l'image adoptopenjdk:17-jre
-FROM openjdk:17-jre-slim
+FROM eclipse-temurin:17-jdk-jammy
 
 # Copiez le fichier JAR construit à partir de l'étape précédente
 COPY --from=builder /app/target/crud-*.jar /app/app.jar
