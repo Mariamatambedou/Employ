@@ -2,7 +2,7 @@ pipeline {
 
     environment {
         DOCKER_HUB_CREDENTIALS = credentials('tambadou-dockerhub')
-        DOCKER_IMAGE_NAME = 'tambedou/app'
+        repo = 'https://hub.docker.com/repositories/tambedou/app'
         DOCKERFILE_PATH = 'Dockerfile'
     }
     agent any
@@ -49,7 +49,7 @@ pipeline {
             steps {
                 script {
                     // Construire l'image Docker
-                    docker.build DOCKER_IMAGE_NAME 
+                    docker.build repo
                 }
             }
         }
