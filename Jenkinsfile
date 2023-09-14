@@ -1,36 +1,62 @@
 pipeline {
-  agent any
-  
-  environment {
-    DOCKER_HUB_CREDENTIALS = credentials('tambadou-dockerhub')
-  }  
 
-   stages {
-    stage('Build') {
-      steps {
-        sh 'docker build -t tambedou/app .'
-      }
+    environment {
+        DOCKER_HUB_CREDENTIALS = credentials('tambadou-dockerhub')
+        repo = 'https://hub.docker.com/repositories/tambedou/'
+        DOCKERFILE_PATH = 'Dockerfile'
     }
-    stage('Login') {
-      steps {
-        sh 'echo $ DOCKER_HUB_CREDENTIALS | docker login -u $ DOCKER_HUB_CREDENTIALS --password-stdin'
-      }
-    }
-    stage('Push') {
-      steps {
-        sh 'docker push  tambedou/app'
-      }
-    }
-  }
-  post {
-    always {
-      sh 'docker logout'
-    }
-  }
-       
+    agent any
+    
+    stages {
+         stage('Clean') {
+            steps {
+                // Supprimez le répertoire existant s'il existe, sans générer d'erreur s'il n'existe pas
+                bat 'rmdir /s /q Employ || exit 0'
+            }
+        }
 
-    
-        
-    
+        stage('Clone') {
+            steps {
+                // Clonez le nouveau dépôt Git
+                bat 'git clone https://github.com/Mariamatambedou/Employ.git Employ'
+            }
+        }
+
+        stage('Build') {
+            steps {
+                // Construisez votre projet Spring Boot avec Maven
+                bat 'mvn clean install -f Employ/pom.xml'
+            }
+        }
+
+        stage('Archive JAR') {
+            steps {
+                // Archivez le fichier JAR en tant que artefact
+                archiveArtifacts artifacts: 'Employ/target/*.jar', allowEmptyArchive: true
+            }
+        }
+
+        stage('Test') {
+           steps {
+        // Exécutez les tests Maven par défaut sont la
+            bat 'mvn test -f Employ/pom.xml'
+            }
+        }
+
+        stage('Build Docker Image') {
+            steps {
+                script {
+                    // Construire l'image Docker
+            dockerImage = docker.build("tambedou/newApp:latest")               
+                }
+            }
+          }
+
+      stage('Push image') {
+        withDockerRegistry([ credentialsId: "tambadou-dockerhub", url: "https://hub.docker.com/repositories/tambedou/" ]) {
+        dockerImage.push()
+        }
+    }    
+}
 }
 
