@@ -1,14 +1,7 @@
 pipeline {
     agent any
-
-    environment{
-        
-        registry = "tambedou/app"
-        registryCredential = '<dockerhub-credential-name>'        
-    }
-    
     stages {
-         stage('Clean') {
+        stage('Clean') {
             steps {
                 // Supprimez le répertoire existant s'il existe, sans générer d'erreur s'il n'existe pas
                 bat 'rmdir /s /q Employ || exit 0'
@@ -43,15 +36,7 @@ pipeline {
             }
         }
 
-        stage('Build Docker Image') {
-            steps {
-                script {
-                    // Construire l'image Docker
-          dockerImage = docker.build registry + ":$BUILD_NUMBER"
-                }
-            }
-          }
 
-     
+    }
 }
-}
+
