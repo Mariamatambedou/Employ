@@ -1,10 +1,6 @@
 pipeline {
 
-    environment {
-        DOCKER_HUB_CREDENTIALS = credentials('tambadou-dockerhub')
-        repo = 'https://hub.docker.com/repositories/tambedou/app'
-        DOCKERFILE_PATH = 'Dockerfile'
-    }
+  
     agent any
     
     stages {
@@ -45,14 +41,7 @@ pipeline {
     
 
     
-        stage('Build Docker Image') {
-            steps {
-                script {
-                    // Construire l'image Docker
-                    docker.build repo
-                }
-            }
-        }
+        
     }
 }
 
