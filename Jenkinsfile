@@ -49,10 +49,10 @@ pipeline {
             steps {
                 script {
                     // Construire l'image Docker
-                    docker.build DOCKER_IMAGE_NAME + ":$BUILD_NUMBER"
+                    docker.build DOCKER_IMAGE_NAME 
                 }
             }
         }
     }
 }
-}
+
