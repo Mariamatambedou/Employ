@@ -46,13 +46,6 @@ pipeline {
             }
           }
 
-      stage('Push image') {
-                     steps {
-
-        withDockerRegistry([ credentialsId: "tambadou-dockerhub", url: "https://hub.docker.com/repositories/tambedou/" ]) {
-            dockerImage.push()
-        }
-    }    
-}
+     
 }
 }
