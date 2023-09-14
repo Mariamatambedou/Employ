@@ -35,6 +35,7 @@ pipeline {
             bat 'mvn test -f Employ/pom.xml'
             }
         }
+    }
         environment {
         // Vous pouvez définir ici les variables d'environnement nécessaires
         DOCKER_HUB_CREDENTIALS = credentials('tambadou-dockerhub')
@@ -57,3 +58,8 @@ pipeline {
 
     }
 }
+        
+}
+    }
+    }
+    
