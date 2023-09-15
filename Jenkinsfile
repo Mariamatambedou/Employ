@@ -50,7 +50,14 @@ pipeline {
                 }
             }
         }
-
+        stage('Push Docker Image') {
+            steps {
+                script {
+                    def dockerImageName = 'dockerimage:tag' // Remplacez par le nom et la version de l'image Docker
+                    bat "docker push $dockerImageName"
+                }
+            }
+        }
 
     }
 }
