@@ -35,6 +35,21 @@ pipeline {
             bat 'mvn test -f Employ/pom.xml'
             }
         }
+        stage('Build Docker Image') {
+            steps {
+                script {
+                    def dockerImageName = 'dockerimage:tag' // Remplacez par le nom et la version souhaités
+                    def dockerfile = '''
+                        FROM eclipse-temurin:17-jdk-jammy
+                        WORKDIR /app
+                        COPY Employ/target/*.jar app.jar
+                        ENTRYPOINT ["java", "-jar", "app.jar"]
+                    '''
+                    writeFile file: 'Dockerfile', text: dockerfile
+                    bat "docker build -t $dockerImageName ."
+                }
+            }
+        }
 
 
     }
