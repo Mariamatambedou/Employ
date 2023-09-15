@@ -50,6 +50,17 @@ pipeline {
                 }
             }
         }
+        stage('Run Docker Container') {
+    steps {
+        script {
+            def dockerImageName = 'dockerimage:tag' // Remplacez par le nom et la version de votre image Docker
+            def containerName = 'my-container' // Remplacez par le nom de votre choix pour le conteneur
+            
+            // Exécutez le conteneur à partir de votre image Docker
+            bat "docker run -d --name $containerName -p 8087:8080 $dockerImageName"
+        }
+    }
+}
         stage('Push Docker Image to Docker Hub') {
     steps {
         script {
