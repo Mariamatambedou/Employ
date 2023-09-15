@@ -50,7 +50,16 @@ pipeline {
                 }
             }
         }
-        
+        stage('Push Docker Image to Docker Hub') {
+            steps {
+                script {
+                    def dockerImageName = 'dockerhubusername/dockerimagename:tag' // Remplacez par votre nom d'utilisateur Docker Hub et le nom de l'image souhaités
+                    def dockerHubToken = credentials('keygit') // Utilisez le secret Jenkins pour le token Docker Hub
+                    bat "docker login -u dockerhubusername -p '$dockerHubToken'"
+                    bat "docker push $dockerImageName"
+                }
+            }
+        }
 
     }
 }
