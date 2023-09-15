@@ -53,6 +53,8 @@ pipeline {
         stage('Push Docker Image') {
             steps {
                 script {
+                    bat 'docker login -u tambedou -p Docker1997? https://hub.docker.com/repository/docker/tambedou/app
+
                     def dockerImageName = 'dockerimage:tag' // Remplacez par le nom et la version de l'image Docker
                     bat "docker push $dockerImageName"
                 }
