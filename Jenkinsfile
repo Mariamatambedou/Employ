@@ -18,7 +18,7 @@ pipeline {
         stage('Build') {
             steps {
                 // Construisez votre projet Spring Boot avec Maven
-                bat 'mvnw clean install -f Employ/pom.xml'
+                bat 'mvn clean install -f Employ/pom.xml'
             }
         }
 
