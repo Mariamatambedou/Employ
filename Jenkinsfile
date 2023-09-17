@@ -1,7 +1,7 @@
 pipeline {
     agent any
      environment {
-        DOCKER_REGISTRY = 'docker.io/tambedou' // Ex: docker.io/votre_utilisateur
+        DOCKER_REGISTRY = 'https://index.docker.io/v1/' // Ex: docker.io/votre_utilisateur
         IMAGE_NAME = 'testim1'
         IMAGE_TAG = 'latest'
         DOCKERFILE_PATH = 'Employ/Dockerfile' // Chemin spécifique à Windows
