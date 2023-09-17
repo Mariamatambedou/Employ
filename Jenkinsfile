@@ -32,14 +32,14 @@ pipeline {
         stage('Archive JAR') {
             steps {
                 // Archivez le fichier JAR en tant que artefact
-                archiveArtifacts artifacts: 'Employ/target/*.jar', allowEmptyArchive: true
+                archiveArtifacts artifacts: 'target/*.jar', allowEmptyArchive: true
             }
         }
 
         stage('Test') {
            steps {
         // Exécutez les tests Maven par défaut sont la
-            bat 'mvn test -f Employ/pom.xml'
+            bat 'mvn test'
             }
         }
         stage('Build and Push Docker Image') {
