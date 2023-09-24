@@ -5,7 +5,7 @@ pipeline {
         IMAGE_NAME = 'testim2'
         IMAGE_TAG = 'latest'
         DOCKERFILE_PATH = 'Employ/Dockerfile' // Chemin spécifique à Windows
-         DOCKER_HUB_TOKEN = credentials('GITHUBTOKEN')
+         DOCKER_HUB_TOKEN = credentials('tambedou-dockerhub')
     }
     stages {
         stage('Clean') {
@@ -44,7 +44,7 @@ pipeline {
         }
         stage('Build and Push Docker Image') {
     steps {
-        withCredentials([string(credentialsId: 'GITHUBTOKEN', variable: 'DOCKER_HUB_TOKEN')]) {
+        withCredentials([string(credentialsId: 'tambedou-dockerhub', variable: 'DOCKER_HUB_TOKEN')]) {
             script {
                 // Construire l'image Docker en spécifiant le chemin du Dockerfile
                 def dockerBuildCmd = "docker build -t ${DOCKER_REGISTRY}/${IMAGE_NAME}:${IMAGE_TAG} -f ${DOCKERFILE_PATH} ."
@@ -52,7 +52,7 @@ pipeline {
                 bat dockerBuildCmd
                 
                 // Utilisez le jeton d'accès Docker Hub pour vous connecter
-                def dockerLoginCmd = "echo $DOCKER_HUB_TOKEN | docker login -u tambedou89mariama@gmail.com --password-stdin $DOCKER_REGISTRY"
+                def dockerLoginCmd = "echo $DOCKER_HUB_TOKEN | docker login -u tambedou --password-stdin $DOCKER_REGISTRY"
                 echo "Commande Docker Login: ${dockerLoginCmd}"
                 bat dockerLoginCmd
                 
