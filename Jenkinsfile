@@ -1,7 +1,10 @@
 pipeline {
     agent any
-    environment {
-        DOCKERHUB_CREDENTIALS = credentials('HUBKEY')
+   environment {
+        DOCKER_REGISTRY = 'docker.io'
+        IMAGE_NAME = 'testim2'
+        IMAGE_TAG = 'latest'
+        DOCKERFILE_PATH = 'Employ/Dockerfile'
     }
     stages {
         stage('Clean') {
@@ -39,29 +42,27 @@ pipeline {
             }
         }
 
-        stage('Build Docker Image') {
+         stage('Build and Push Docker Image') {
             steps {
-                bat 'docker build -t tambedou/jenkins-docker-hub .'
+                withCredentials([string(credentialsId: 'HUBKEY', variable: 'DOCKER_HUB_PASSWORD')]) {
+                    script {
+                        // Construire l'image Docker en spécifiant le chemin du Dockerfile
+                        def dockerBuildCmd = "docker build -t ${DOCKER_REGISTRY}/${IMAGE_NAME}:${IMAGE_TAG} -f ${DOCKERFILE_PATH} ."
+                        echo "Commande Docker Build: ${dockerBuildCmd}"
+                        bat dockerBuildCmd
+                        
+                        // Utilisez le mot de passe Docker Hub pour vous connecter
+                        def dockerLoginCmd = "echo ${DOCKER_HUB_PASSWORD} | docker login -u tambedou --password-stdin ${DOCKER_REGISTRY}"
+                        echo "Commande Docker Login: ${dockerLoginCmd}"
+                        bat dockerLoginCmd
+                        
+                        // Poussez l'image Docker vers le registre
+                        def dockerPushCmd = "docker push ${DOCKER_REGISTRY}/${IMAGE_NAME}:${IMAGE_TAG}"
+                        echo "Commande Docker Push: ${dockerPushCmd}"
+                        bat dockerPushCmd
+                    }
+                }
             }
-        }
-
-        stage('Login to Docker Hub') {
-            steps {
-               
-                    bat 'echo "Docker1997?" | docker login -u "tambedou" --password-stdin'
-                
-            }
-        }
-
-        stage('Push Docker Image') {
-            steps {
-                bat 'docker push tambedou/jenkins-docker-hub'
-            }
-        }
-    }
-    post {
-        always {
-            bat 'docker logout'
         }
     }
 }
