@@ -44,7 +44,8 @@ pipeline {
 
          stage('Build and Push Docker Image') {
             steps {
-                withCredentials([string(credentialsId: 'HUBKEY', variable: 'DOCKER_HUB_PASSWORD')]) {
+                 withCredentials([usernamePassword(credentialsId: 'HUBKEY', usernameVariable: 'DOCKERHUB_CREDENTIALS_USR', passwordVariable: 'DOCKERHUB_CREDENTIALS_PSW')]) {
+            bat 'echo %DOCKERHUB_CREDENTIALS_PSW% | docker login -u %DOCKERHUB_CREDENTIALS_USR% --password-stdin' {
                     script {
                         // Construire l'image Docker en spécifiant le chemin du Dockerfile
                         def dockerBuildCmd = "docker build -t ${DOCKER_REGISTRY}/${IMAGE_NAME}:${IMAGE_TAG} -f ${DOCKERFILE_PATH} ."
