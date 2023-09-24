@@ -41,7 +41,7 @@ pipeline {
 
         stage('Build Docker Image') {
             steps {
-                bat 'docker build -t tambedou/jenkins-docker-hub .'
+                bat 'docker build -t tambedou/jenkins-docker-hub'
             }
         }
 
