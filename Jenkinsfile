@@ -41,15 +41,15 @@ pipeline {
 
         stage('Build Docker Image') {
             steps {
-                bat 'docker build -t tambedou/jenkins-docker-hub'
+                bat 'docker build -t tambedou/jenkins-docker-hub .'
             }
         }
 
         stage('Login to Docker Hub') {
             steps {
-                withCredentials([string(credentialsId: 'HUBKEY', variable: 'DOCKERHUB_CREDENTIALS_PSW')]) {
-                    bat 'echo $DOCKERHUB_CREDENTIALS_PSW | docker login -u $DOCKERHUB_CREDENTIALS_USR --password-stdin'
-                }
+               
+                    bat 'echo %DOCKERHUB_CREDENTIALS_PSW% | docker login -u %DOCKERHUB_CREDENTIALS_USR% --password-stdin'
+                
             }
         }
 
