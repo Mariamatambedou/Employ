@@ -1,10 +1,7 @@
 pipeline {
     agent any
     environment {
-        DOCKER_REGISTRY = 'docker.io'
-        IMAGE_NAME = 'testim2'
-        IMAGE_TAG = 'latest'
-        DOCKERFILE_PATH = 'Employ/Dockerfile'
+        DOCKERHUB_CREDENTIALS = credentials('HUBKEY')
     }
     stages {
         stage('Clean') {
@@ -30,50 +27,41 @@ pipeline {
 
         stage('Archive JAR') {
             steps {
-                // Archivez le fichier JAR en tant que artefact
+                // Archivez le fichier JAR en tant qu'artefact
                 archiveArtifacts artifacts: 'target/*.jar', allowEmptyArchive: true
             }
         }
 
         stage('Test') {
-           steps {
-        // Exécutez les tests Maven par défaut sont la
-            bat 'mvn test'
+            steps {
+                // Exécutez les tests Maven par défaut
+                bat 'mvn test'
             }
         }
-       stage('Build and Push Docker Image') {
+
+        stage('Build Docker Image') {
             steps {
-                withCredentials([string(credentialsId: 'HUBKEY', variable: 'DOCKER_HUB_PASSWORD')]) {
-                    script {
-                        // Construire l'image Docker en spécifiant le chemin du Dockerfile
-                        def dockerBuildCmd = "docker build -t ${DOCKER_REGISTRY}/${IMAGE_NAME}:${IMAGE_TAG} -f ${DOCKERFILE_PATH} ."
-                        echo "Commande Docker Build: ${dockerBuildCmd}"
-                        bat dockerBuildCmd
-                        
-                        // Utilisez le mot de passe Docker Hub pour vous connecter
-                        def dockerLoginCmd = "echo ${DOCKER_HUB_PASSWORD} | docker login -u tambedou --password-stdin ${DOCKER_REGISTRY}"
-                        echo "Commande Docker Login: ${dockerLoginCmd}"
-                        bat dockerLoginCmd
-                        
-                        // Poussez l'image Docker vers le registre
-                        def dockerPushCmd = "docker push ${DOCKER_REGISTRY}/${IMAGE_NAME}:${IMAGE_TAG}"
-                        echo "Commande Docker Push: ${dockerPushCmd}"
-                        bat dockerPushCmd
-                    }
+                bat 'docker build -t tambedou/jenkins-docker-hub .'
+            }
+        }
+
+        stage('Login to Docker Hub') {
+            steps {
+                withCredentials([string(credentialsId: 'HUBKEY', variable: 'DOCKERHUB_CREDENTIALS_PSW')]) {
+                    bat 'echo $DOCKERHUB_CREDENTIALS_PSW | docker login -u $DOCKERHUB_CREDENTIALS_USR --password-stdin'
                 }
             }
         }
-    
 
-
-
-
-
-
-
-
-
-
+        stage('Push Docker Image') {
+            steps {
+                bat 'docker push tambedou/jenkins-docker-hub'
+            }
+        }
+    }
+    post {
+        always {
+            bat 'docker logout'
+        }
     }
 }
-
