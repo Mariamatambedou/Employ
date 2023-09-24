@@ -48,7 +48,7 @@ pipeline {
         stage('Login to Docker Hub') {
             steps {
                
-                    bat 'echo Docker1997? | docker login -u tambedou --password-stdin'
+                    bat 'echo "Docker1997?" | docker login -u "tambedou" --password-stdin'
                 
             }
         }
