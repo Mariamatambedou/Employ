@@ -1,8 +1,8 @@
 pipeline {
     agent any
      environment {
-        DOCKER_REGISTRY = 'https://index.docker.io/v1/' // Ex: docker.io/votre_utilisateur
-        IMAGE_NAME = 'testim1'
+        DOCKER_REGISTRY = 'docker.io' // Ex: docker.io/votre_utilisateur
+        IMAGE_NAME = 'testim2'
         IMAGE_TAG = 'latest'
         DOCKERFILE_PATH = 'Employ/Dockerfile' // Chemin spécifique à Windows
          DOCKER_HUB_TOKEN = credentials('keygit')
@@ -49,10 +49,10 @@ pipeline {
             bat "docker build -t ${DOCKER_REGISTRY}/${IMAGE_NAME}:${IMAGE_TAG} -f ${DOCKERFILE_PATH} ."
             
             // Utilisez le jeton d'authentification Docker Hub pour vous connecter
-            bat 'echo ${DOCKER_HUB_TOKEN} | docker login -u tambedou --password-stdin ${DOCKER_REGISTRY}'
+            bat "echo ${DOCKER_HUB_TOKEN} | docker login -u tambedou --password-stdin ${DOCKER_REGISTRY}"
             
             // Poussez l'image Docker vers le registre
-            bat 'docker push ${DOCKER_REGISTRY}/${IMAGE_NAME}:${IMAGE_TAG}'
+            bat "docker push ${DOCKER_REGISTRY}/${IMAGE_NAME}:${IMAGE_TAG}"
         }
     }
 }
