@@ -1,11 +1,10 @@
 pipeline {
     agent any
-     environment {
-        DOCKER_REGISTRY = 'docker.io' // Ex: docker.io/votre_utilisateur
+    environment {
+        DOCKER_REGISTRY = 'docker.io'
         IMAGE_NAME = 'testim2'
         IMAGE_TAG = 'latest'
-        DOCKERFILE_PATH = 'Employ/Dockerfile' // Chemin spécifique à Windows
-         DOCKER_HUB_TOKEN = credentials('tambedou-dockerhub')
+        DOCKERFILE_PATH = 'Employ/Dockerfile'
     }
     stages {
         stage('Clean') {
@@ -42,28 +41,36 @@ pipeline {
             bat 'mvn test'
             }
         }
-        stage('Build and Push Docker Image') {
-    steps {
-        withCredentials([string(credentialsId: 'tambedou-dockerhub', variable: 'DOCKER_HUB_TOKEN')]) {
-            script {
-                // Construire l'image Docker en spécifiant le chemin du Dockerfile
-                def dockerBuildCmd = "docker build -t ${DOCKER_REGISTRY}/${IMAGE_NAME}:${IMAGE_TAG} -f ${DOCKERFILE_PATH} ."
-                echo "Commande Docker Build: ${dockerBuildCmd}"
-                bat dockerBuildCmd
-                
-                // Utilisez le jeton d'accès Docker Hub pour vous connecter
-                def dockerLoginCmd = "echo $DOCKER_HUB_TOKEN | docker login -u tambedou --password-stdin $DOCKER_REGISTRY"
-                echo "Commande Docker Login: ${dockerLoginCmd}"
-                bat dockerLoginCmd
-                
-                // Poussez l'image Docker vers le registre
-                def dockerPushCmd = "docker push ${DOCKER_REGISTRY}/${IMAGE_NAME}:${IMAGE_TAG}"
-                echo "Commande Docker Push: ${dockerPushCmd}"
-                bat dockerPushCmd
+       stage('Build and Push Docker Image') {
+            steps {
+                withCredentials([string(credentialsId: 'HUBKEY', variable: 'DOCKER_HUB_PASSWORD')]) {
+                    script {
+                        // Construire l'image Docker en spécifiant le chemin du Dockerfile
+                        def dockerBuildCmd = "docker build -t ${DOCKER_REGISTRY}/${IMAGE_NAME}:${IMAGE_TAG} -f ${DOCKERFILE_PATH} ."
+                        echo "Commande Docker Build: ${dockerBuildCmd}"
+                        bat dockerBuildCmd
+                        
+                        // Utilisez le mot de passe Docker Hub pour vous connecter
+                        def dockerLoginCmd = "echo ${DOCKER_HUB_PASSWORD} | docker login -u tambedou89mariama@gmail.com --password-stdin ${DOCKER_REGISTRY}"
+                        echo "Commande Docker Login: ${dockerLoginCmd}"
+                        bat dockerLoginCmd
+                        
+                        // Poussez l'image Docker vers le registre
+                        def dockerPushCmd = "docker push ${DOCKER_REGISTRY}/${IMAGE_NAME}:${IMAGE_TAG}"
+                        echo "Commande Docker Push: ${dockerPushCmd}"
+                        bat dockerPushCmd
+                    }
+                }
             }
         }
-    }
-}
+    
+
+
+
+
+
+
+
 
 
 
