@@ -51,7 +51,7 @@ pipeline {
             bat dockerBuildCmd
             
             // Utilisez le jeton d'authentification Docker Hub pour vous connecter
-            def dockerLoginCmd = "echo ${DOCKER_HUB_TOKEN} | docker login -u tambedou --password-stdin ${DOCKER_REGISTRY}"
+            def dockerLoginCmd = "echo ${DOCKER_HUB_TOKEN} | docker login -u tambedou89mariama@gmail.com --password-stdin ${DOCKER_REGISTRY}"
             echo "Commande Docker Login: ${dockerLoginCmd}"
             bat dockerLoginCmd
             
