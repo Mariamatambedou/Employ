@@ -44,7 +44,7 @@ pipeline {
         }
         stage('Build and Push Docker Image') {
     steps {
-        withCredentials([string(credentialsId: 'GitHub Token', variable: 'DOCKER_HUB_TOKEN')]) {
+        withCredentials([string(credentialsId: 'GITHUBTOKEN', variable: 'DOCKER_HUB_TOKEN')]) {
             script {
                 // Construire l'image Docker en spécifiant le chemin du Dockerfile
                 def dockerBuildCmd = "docker build -t ${DOCKER_REGISTRY}/${IMAGE_NAME}:${IMAGE_TAG} -f ${DOCKERFILE_PATH} ."
