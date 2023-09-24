@@ -43,19 +43,26 @@ pipeline {
             }
         }
         stage('Build and Push Docker Image') {
-        steps {
+    steps {
         script {
             // Construire l'image Docker en spécifiant le chemin du Dockerfile
-            bat "docker build -t ${DOCKER_REGISTRY}/${IMAGE_NAME}:${IMAGE_TAG} -f ${DOCKERFILE_PATH} ."
+            def dockerBuildCmd = "docker build -t ${DOCKER_REGISTRY}/${IMAGE_NAME}:${IMAGE_TAG} -f ${DOCKERFILE_PATH} ."
+            echo "Commande Docker Build: ${dockerBuildCmd}"
+            bat dockerBuildCmd
             
             // Utilisez le jeton d'authentification Docker Hub pour vous connecter
-            bat "echo ${DOCKER_HUB_TOKEN} | docker login -u tambedou --password-stdin ${DOCKER_REGISTRY}"
+            def dockerLoginCmd = "echo ${DOCKER_HUB_TOKEN} | docker login -u tambedou --password-stdin ${DOCKER_REGISTRY}"
+            echo "Commande Docker Login: ${dockerLoginCmd}"
+            bat dockerLoginCmd
             
             // Poussez l'image Docker vers le registre
-            bat "docker push ${DOCKER_REGISTRY}/${IMAGE_NAME}:${IMAGE_TAG}"
+            def dockerPushCmd = "docker push ${DOCKER_REGISTRY}/${IMAGE_NAME}:${IMAGE_TAG}"
+            echo "Commande Docker Push: ${dockerPushCmd}"
+            bat dockerPushCmd
         }
     }
 }
+
 
 
     }
