@@ -5,7 +5,7 @@ pipeline {
         IMAGE_NAME = 'testim2'
         IMAGE_TAG = 'latest'
         DOCKERFILE_PATH = 'Employ/Dockerfile' // Chemin spécifique à Windows
-         DOCKER_HUB_TOKEN = credentials('keygit')
+         DOCKER_HUB_TOKEN = credentials('GITHUBTOKEN')
     }
     stages {
         stage('Clean') {
