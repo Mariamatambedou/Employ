@@ -1,70 +1,76 @@
 pipeline {
     agent any
-   environment {
-        DOCKER_REGISTRY = 'docker.io'
-        IMAGE_NAME = 'testim2'
+    environment {
+        DOCKER_REGISTRY = 'docker.io/tambedou' // Exemple : docker.io/votre_utilisateur
+        IMAGE_NAME = 'jpimage3'
         IMAGE_TAG = 'latest'
-        DOCKERFILE_PATH = 'Employ/Dockerfile'
+        DOCKERFILE_PATH = 'Employ/Dockerfile' // Chemin spécifique à Linux
+        DOCKER_HUB_USERNAME = 'tambedou'
+        DOCKER_HUB_TOKEN = 'Github'
+        
     }
+
     stages {
-        stage('Clean') {
+        stage('Checkout') {
             steps {
-                // Supprimez le répertoire existant s'il existe, sans générer d'erreur s'il n'existe pas
-                bat 'rmdir /s /q Employ || exit 0'
+                // Utilisation des informations d'identification pour Git
+                checkout([$class: 'GitSCM', 
+                    branches: [[name: 'main']], 
+                    userRemoteConfigs: [[
+                        url: 'https://github.com/Mariamatambedou/Employ.git'
+                    ]]
+                ])
             }
         }
 
-        stage('Clone') {
+        stage('Build and Test') {
             steps {
-                // Clonez le nouveau dépôt Git
-                bat 'git clone https://github.com/Mariamatambedou/Employ.git Employ'
-            }
-        }
+                // Nettoyez le projet
+                sh 'mvn clean install'
 
-        stage('Build') {
-            steps {
-                // Construisez votre projet Spring Boot avec Maven
-                bat 'mvn clean install'
-            }
-        }
+                // Vérifiez les dépendances
+                // sh 'mvn dependency:resolve'
 
-        stage('Archive JAR') {
-            steps {
-                // Archivez le fichier JAR en tant qu'artefact
-                archiveArtifacts artifacts: 'target/*.jar', allowEmptyArchive: true
-            }
-        }
+                // Exécutez la phase package
+                sh 'mvn package'
 
-        stage('Test') {
-            steps {
-                // Exécutez les tests Maven par défaut
-                bat 'mvn test'
-            }
-        }
-
-         stage('Build and Push Docker Image') {
-            steps {
-                 withCredentials([usernamePassword(credentialsId: 'HUBKEY', usernameVariable: 'DOCKERHUB_CREDENTIALS_USR', passwordVariable: 'DOCKERHUB_CREDENTIALS_PSW')]) {
-            bat 'echo %DOCKERHUB_CREDENTIALS_PSW% | docker login -u %DOCKERHUB_CREDENTIALS_USR% --password-stdin' {
-                    script {
-                        // Construire l'image Docker en spécifiant le chemin du Dockerfile
-                        def dockerBuildCmd = "docker build -t ${DOCKER_REGISTRY}/${IMAGE_NAME}:${IMAGE_TAG} -f ${DOCKERFILE_PATH} ."
-                        echo "Commande Docker Build: ${dockerBuildCmd}"
-                        bat dockerBuildCmd
-                        
-                        // Utilisez le mot de passe Docker Hub pour vous connecter
-                        def dockerLoginCmd = "echo ${DOCKER_HUB_PASSWORD} | docker login -u tambedou --password-stdin ${DOCKER_REGISTRY}"
-                        echo "Commande Docker Login: ${dockerLoginCmd}"
-                        bat dockerLoginCmd
-                        
-                        // Poussez l'image Docker vers le registre
-                        def dockerPushCmd = "docker push ${DOCKER_REGISTRY}/${IMAGE_NAME}:${IMAGE_TAG}"
-                        echo "Commande Docker Push: ${dockerPushCmd}"
-                        bat dockerPushCmd
+                // Vérifiez si l'étape précédente a réussi
+                script {
+                    if (currentBuild.resultIsWorseOrEqualTo('FAILURE')) {
+                        error("La construction a échoué. Vérifiez les journaux de construction.")
                     }
                 }
             }
         }
+
+        stage('Build and Push Docker Image') {
+            steps {
+                script {
+                    // Construire l'image Docker en spécifiant le chemin du Dockerfile
+                    sh "docker build -t ${DOCKER_REGISTRY}/${IMAGE_NAME}:${IMAGE_TAG} -f ${DOCKERFILE_PATH} ."
+                }
+            }
+        }
+
+        stage('Push Docker Image to Docker Hub') {
+            steps {
+                script {
+                    // Authentification Docker Hub en utilisant le token d'authentification
+                    sh "docker login -u ${DOCKER_HUB_USERNAME} -p ${DOCKER_HUB_TOKEN}"
+
+                    // Poussez l'image vers Docker Hub
+                    sh "docker push ${DOCKER_REGISTRY}/${IMAGE_NAME}:${IMAGE_TAG}"
+                }
+            }
+        }
+    }
+
+    post {
+        success {
+            echo 'Pipeline terminé avec succès!'
+        }
+        failure {
+            echo 'Le pipeline a échoué. Veuillez vérifier les étapes précédentes.'
+        }
     }
 }
-}    
